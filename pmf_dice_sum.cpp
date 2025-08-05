@@ -1,20 +1,19 @@
 #include <iostream>
 #include <string>
-#include <array>
+#include <vector>
 #include <map>
 
 const char PRESENTATION_CHAR = '#';
 const int UPPER_BOUND = 6;
 const int LOWER_BOUND = 1;
-const int NUM_OF_DICES = 4;
 const int NOT_A_INDEX = -1;
 
 class Simulator 
 {
     public:
-        Simulator () 
+        Simulator (int num_of_dices_) : num_of_dices_(num_of_dices_)
         {
-            nums_.fill(LOWER_BOUND);
+            nums_ = std::vector<int> (num_of_dices_, 1);
             finished_ = false;
         }
 
@@ -39,7 +38,7 @@ class Simulator
             while ((idx = get_index_invalid()) != NOT_A_INDEX)
             {
                 nums_[idx++] %= UPPER_BOUND;
-                if (idx >= NUM_OF_DICES)
+                if (idx >= num_of_dices_)
                 {
                     nums_ = copy;
                     finished_ = true;
@@ -53,20 +52,21 @@ class Simulator
         int calculate()
         {
             int sum = 0;
-            for (int i = 0; i  < NUM_OF_DICES; ++i)
+            for (int i = 0; i  < num_of_dices_; ++i)
                 sum += nums_[i];
             return sum;
         }
 
         int get_index_invalid() 
         {
-            for (int i = 0; i  < NUM_OF_DICES; ++i)
+            for (int i = 0; i  < num_of_dices_; ++i)
                 if (nums_[i] > 6)
                     return i;
             return NOT_A_INDEX;
         }
 
-        std::array<int, NUM_OF_DICES> nums_;
+        std::vector<int> nums_;
+        int num_of_dices_;
         bool finished_;
 };
 
@@ -90,7 +90,10 @@ void show(std::map<int, int>& result)
 int main()
 {
     std::map<int, int> result;
-    Simulator dice_throw;
+    int num_of_dices;
+    std::cout << "Enter number of dices: ";
+    std::cin >> num_of_dices;
+    Simulator dice_throw(num_of_dices);
     while (!dice_throw.is_finished()) {
         int trial = dice_throw.generate();
         ++result[trial];
